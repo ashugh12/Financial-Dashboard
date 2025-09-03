@@ -8,9 +8,7 @@ Point to be noted: Use Gemini model, increase the time but, it is the best solut
 We have focused only on https://stock.indianapi.in/trending and [https://stock.indianapi.in/commodities](https://stock.indianapi.in/commodities). I choose seamless integration with single api and focus on the other aspect such as drag and drop functionality. Also I have focused to implement robust state management and data persistence in term of cache.
 
 
-
-
-##Folder structure and Architecture
+https://github.com/user-attachments/assets/98e10fef-7b1c-4975-8b27-e1c590fbb5a4
 
 
 ## Technologies I choose from the give one
