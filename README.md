@@ -1,7 +1,9 @@
 # FibBoard
 Thanks to Groww for providing me to use my technical skill to build.
 
-Simple Customizable, finance dashboard, where user can build their own realtime finance monitoring. They can connect to various API and display their real-time data.
+Simple Customizable, finance dashboard, where user can build their own realtime finance monitoring. They can connect to various API and display their real-time data, using the Gemini model in middle, as pipeline to process my data and based on reasoning, provide, logical data point, that later used to show on the Card.
+
+Point to be noted: Use Gemini model, increase the time but, it is the best solution I figure out to the problem where I have to deal with flattening multiple json data. So Gemini return a common and genric json which I can eaasily use, to travere and show on the cards. I utilize problem solving ability to solve this problem within stipulated time.
 
 We have focused only on https://stock.indianapi.in/trending and [https://stock.indianapi.in/commodities](https://stock.indianapi.in/commodities). I choose seamless integration with single api and focus on the other aspect such as drag and drop functionality. Also I have focused to implement robust state management and data persistence in term of cache.
 
