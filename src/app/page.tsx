@@ -1,103 +1,197 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import useDashboardStore from '@/store/dashboardStore'
+import Widget from '@/components/Widget'
+import Image from 'next/image'
+import React from 'react'
+import useDialogStore from '@/store/dialogStore'
+import DialogForm from '@/components/cards/DialogForm'
+import { refreshWidgetDataWithCache } from '@/lib/api/fetchStocks'
+import { useThemeStore } from '@/store/themeStore'
+import CacheStatus from '@/components/CacheStatus'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable'
+import {
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+
+export default function HomePage() {
+  const { widgets, removeWidget, reorderWidgets, updateWidget, clearAllWidgets } = useDashboardStore()
+  const { openDialog, openForEdit } = useDialogStore();
+  const { theme, toggleTheme } = useThemeStore();
+
+
+  // Set up sensors for drag and drop
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag and drop
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const oldIndex = widgets.findIndex((widget) => widget.id === active.id);
+      const newIndex = widgets.findIndex((widget) => widget.id === over?.id);
+
+      reorderWidgets(oldIndex, newIndex);
+    }
+  };
+
+  // Refresh widget data at specified intervals
+  const refreshWidgetData = async (widgetId: string, apiUrl: string) => {
+    try {
+      console.log(`🔄 [WIDGET] Refreshing widget ${widgetId} from: ${apiUrl}`);
+      const { valid, data, fromCache } = await refreshWidgetDataWithCache(widgetId, apiUrl);
+      if (valid && data) {
+        updateWidget(widgetId, { data });
+        if (fromCache) {
+          console.log(`✅ [WIDGET] Widget ${widgetId} updated with cached data`);
+        } else {
+          console.log(`✅ [WIDGET] Widget ${widgetId} updated with fresh data`);
+        }
+      } else {
+        console.log(`❌ [WIDGET] Failed to refresh widget ${widgetId}`);
+      }
+    } catch (error) {
+      console.error(`💥 [WIDGET ERROR] Failed to refresh widget ${widgetId}:`, error);
+    }
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <main className={`min-h-screen space-y-6 transition-colors duration-200 ${
+      theme === 'dark' ? 'bg-black' : 'bg-white'
+    }`}>
+      <div className={`flex justify-between items-center p-6 border-b transition-colors duration-200 ${
+        theme === 'dark' ? 'bg-black border-white' : 'bg-white border-black'
+      }`}>
+        <div className='flex items-center gap-4'>
+          <Image src="/icons/logo.png" alt="Logo" width={32} height={32} />
+          <div className={theme === 'dark' ? 'text-white' : 'text-black'}>
+            <div className='text-2xl font-bold'>Finance Dashboard</div>
+            <p className='text-sm'>Connects to APIs and build your custom dashboard</p>
+            <CacheStatus 
+              widgetCount={widgets.length} 
+              onClearCache={clearAllWidgets} 
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="flex gap-3">  
+          <button 
+            className='bg-violet-500 text-white p-2 rounded-md hover:bg-violet-600 hover:px-3' 
+            onClick={openDialog}
+          >
+            + Add Widget
+          </button>
+          <button 
+            className={`p-2 rounded-md transition-colors duration-200 ${
+              theme === 'dark' 
+                ? 'bg-white text-black hover:bg-gray-200' 
+                : 'bg-black text-white hover:bg-gray-800'
+            }`}
+            onClick={toggleTheme}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+        </div>
+      </div>
+
+      <DialogForm />
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={widgets.map(w => w.id)} strategy={rectSortingStrategy}>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+            {widgets.length > 0 ? widgets.map((w) => (
+              <SortableWidget
+                key={w.id}
+                widget={w}
+                onRemove={() => removeWidget(w.id)}
+                onConfigure={() => openForEdit(w.id)}
+                onRefresh={() => refreshWidgetData(w.id, w.apiUrl || '')}
+              />
+            )) : (
+              <div className={`col-span-full flex items-center justify-center h-[560px] ${
+                theme === 'dark' ? 'text-white' : 'text-black'
+              }`}>
+                <div className='flex flex-col items-center gap-2'>
+                  <div className='text-xl'>Build your Finance Dashboard</div>
+                  <p className='text-sm'>Create custom widgets by connecting to any Finance API. Track your stocks, currencies, and more.</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </SortableContext>
+      </DndContext>
+    </main>
+  )
+}
+
+// SortableWidget component
+function SortableWidget({ 
+  widget, 
+  onRemove, 
+  onConfigure, 
+  onRefresh 
+}: { 
+  widget: any; 
+  onRemove: () => void; 
+  onConfigure: () => void; 
+  onRefresh: () => void; 
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: widget.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`${isDragging ? 'rotate-2 scale-105 z-50 opacity-50' : ''} transition-transform duration-200`}
+    >
+      <Widget
+        type={widget.type}
+        refreshInterval={widget.refreshInterval / 1000}
+        title={widget.title}
+        onRemove={onRemove}
+        onConfigure={onConfigure}
+        selected={widget.fields}
+        data={widget.data}
+        apiUrl={widget.apiUrl}
+        onRefresh={onRefresh}
+        dragAttributes={attributes}
+        dragListeners={listeners}
+      />
     </div>
   );
 }
