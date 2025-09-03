@@ -3,7 +3,7 @@ Thanks to Groww for providing me to use my technical skill to build.
 
 Simple Customizable, finance dashboard, where user can build their own realtime finance monitoring. They can connect to various API and display their real-time data.
 
-We have focused only on https://stock.indianapi.in/trending. I choose seamless integration with single api and focus on the other aspect such as drag and drop functionality. Also I have focused to implement robust state management and data persistence in term of cache.
+We have focused only on https://stock.indianapi.in/trending and [https://stock.indianapi.in/commodities](https://stock.indianapi.in/commodities). I choose seamless integration with single api and focus on the other aspect such as drag and drop functionality. Also I have focused to implement robust state management and data persistence in term of cache.
 
 
 
