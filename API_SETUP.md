@@ -12,7 +12,7 @@ NEXT_PUBLIC_INDIANAPI_KEY=your_indian_api_key_here
 ## API Endpoints
 
 ### Indian API (stock.indianapi.in)
-- **Base URL**: `https://stock.indianapi.in/trending`
+- **Base URL**: `https://stock.indianapi.in/trending` , `https://stock.indianapi.in/commodities`
 - **Authentication**: API key as query parameter (`?apikey=YOUR_KEY`)
 - **Rate Limit**: For Indian API, It is 500/month
 - **Data Format**: JSON with trending stocks data: consist of top_gainer and top_loser
