@@ -11,17 +11,17 @@ This document explains the folder structure, state management, data flow, and th
     - page.tsx — Dashboard page: header, theme toggle, DialogForm, widgets grid, drag-and-drop
     - globals.css — Tailwind base styles
   - components/
-    - Widget.tsx — Single widget UI (card/table/chart), actions, auto-refresh, header controls
+    - Widget.tsx — Main wrapper with Single widget UI (card/table/chart), actions, auto-refresh, header controls component in the widget folder
     - CacheStatus.tsx — Displays number of widgets and clear action
     - cards/
-      - DialogForm.tsx — Add/Edit widget dialog; validation, API test, save
+      - DialogForm.tsx — Add/Edit widget dialog; validation, API test, save (sub component inside dialog)
       - FieldSelector.tsx — Field selection and display mode (card/table/chart)
   - lib/
     - api/
       - fetchStocks.ts —  Common implement the core functionality using helper function
       - cacheUtil.ts - Implement strategy using AI tool to cache data efficiently
-      -apiValidator.ts - Based on api endpoints, it structure the data
-      -normalizer.ts - Make the post request, generate data and at last return the structured data
+      - apiValidator.ts - Based on api endpoints, it structure the data
+      - normalizer.ts - Make the post request, generate data and at last return the structured data
 
   - store/
     - dashboardStore.ts — Widgets array and actions involves id, type, tilte, apiUrl (Zustand + persist)

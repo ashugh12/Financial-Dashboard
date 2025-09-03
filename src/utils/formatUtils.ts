@@ -18,6 +18,6 @@ export function formatDisplayName(key: string): string {
     }
     if (typeof value === 'object') return JSON.stringify(value)
     if (typeof value === 'number') return value.toLocaleString()
-    return String(value)
+    return String(value) 
   }
   
