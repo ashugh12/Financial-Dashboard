@@ -57,20 +57,12 @@ export default function HomePage() {
   // Refresh widget data at specified intervals
   const refreshWidgetData = async (widgetId: string, apiUrl: string) => {
     try {
-      console.log(`🔄 [WIDGET] Refreshing widget ${widgetId} from: ${apiUrl}`);
       const { valid, data, fromCache } = await refreshWidgetDataWithCache(widgetId, apiUrl);
       if (valid && data) {
         updateWidget(widgetId, { data });
-        if (fromCache) {
-          console.log(`✅ [WIDGET] Widget ${widgetId} updated with cached data`);
-        } else {
-          console.log(`✅ [WIDGET] Widget ${widgetId} updated with fresh data`);
-        }
-      } else {
-        console.log(`❌ [WIDGET] Failed to refresh widget ${widgetId}`);
-      }
+      } 
     } catch (error) {
-      console.error(`💥 [WIDGET ERROR] Failed to refresh widget ${widgetId}:`, error);
+      console.error( error);
     }
   };
 

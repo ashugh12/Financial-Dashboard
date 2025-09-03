@@ -46,10 +46,6 @@ We have focused only on https://stock.indianapi.in/trending and [https://stock.i
 - API responses are cached to reduce API calls
 - Cache expiration based on refresh intervals
 
-### **Cache Indicators**
-- 📦 Blue box shows when using cached data
-- Cache status displayed in header
-- Clear cache button to reset all cached data
 
 ### **Cache Benefits**
 - **Faster Loading**: Cached data loads instantly

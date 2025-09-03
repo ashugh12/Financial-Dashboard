@@ -64,27 +64,22 @@ export async function refreshWidgetData(apiUrl: string): Promise<{ valid: boolea
   try {
     const cachedData = apiCache.get(apiUrl);
     if (cachedData) {
-      console.log(`[CACHE] Using cached data for: ${apiUrl}`);
       return { valid: true, data: cachedData, fromCache: true };
     }
 
-    console.log(`[API] Fetching fresh data from: ${apiUrl}`);
     const result = await isValid(apiUrl);
 
     if (result.valid && result.data) {
       apiCache.set(apiUrl, result.data);
-      console.log(`[CACHE] Data refreshed and cached for: ${apiUrl}`);
-    } else {
-      console.log(`[API] Failed to fetch valid data from: ${apiUrl}`);
-    }
+    } 
 
     return { ...result, fromCache: false };
   } catch (error) {
-    console.error(`[ERROR] Failed to refresh widget data for ${apiUrl}:`, error);
+    console.error( error);
 
     const cachedData = apiCache.get(apiUrl);
     if (cachedData) {
-      console.log(`[CACHE] Returning cached data due to refresh failure`);
+
       return { valid: true, data: cachedData, fromCache: true };
     }
 
@@ -103,11 +98,9 @@ export async function refreshWidgetDataWithCache(
     const validator = getStructureValidator(apiUrl);
 
     if (cachedWidgetData && (!validator || validator(cachedWidgetData.data))) {
-      console.log(`[WIDGET CACHE] Using cached data for widget ${widgetId}`);
       return { valid: true, data: cachedWidgetData.data, fromCache: true };
     }
 
-    console.log(`[WIDGET API] Fetching fresh data for widget ${widgetId} from: ${apiUrl}`);
     const result = await isValid(apiUrl);
 
     if (result.valid && result.data) {
@@ -121,14 +114,13 @@ export async function refreshWidgetDataWithCache(
       return { valid: true, data: payload, fromCache: false };
     }
 
-    console.log(`[WIDGET API] Failed to fetch valid data for widget ${widgetId}`);
     return { ...result, fromCache: false };
   } catch (error) {
     console.error(`[WIDGET ERROR] Failed to refresh widget ${widgetId}:`, error);
 
     const cachedWidgetData = getCachedWidgetData(widgetId, maxCacheAge);
     if (cachedWidgetData) {
-      console.log(`[WIDGET CACHE] Returning cached data for ${widgetId} due to refresh failure`);
+
       return { valid: true, data: cachedWidgetData.data, fromCache: true };
     }
 
