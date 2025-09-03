@@ -6,8 +6,19 @@ import { tryNormalizeData } from './normalizer';
 const apiCache = new APICache(30000); // 30 seconds
 
 export async function fetchIndianAPI(symbol: string) {
-  const apiKey = process.env.NEXT_PUBLIC_INDIANAPI_KEY;
-  const res = await fetch(`https://indianapi.in/stocks/${symbol}?apikey=${apiKey}`);
+  const apiKey = process.env.NEXT_PUBLIC_INDIANAPI_KEY; // store in .env.local
+
+  const res = await fetch(`https://indianapi.in/stocks/${symbol}`, {
+    headers: {
+      "X-Api-Key": apiKey,
+      "Accept": "application/json",
+    } as HeadersInit,
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch ${symbol}: ${res.status} ${res.statusText}`);
+  }
+
   const json = await res.json();
 
   const points = [
@@ -19,6 +30,7 @@ export async function fetchIndianAPI(symbol: string) {
 
   return { symbol, points };
 }
+
 
 export async function isValid(url: string): Promise<{ valid: boolean; data: any | null }> {
   try {
